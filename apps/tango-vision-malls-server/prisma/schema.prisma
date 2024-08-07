@@ -1,0 +1,123 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tenant {
+  businessType        String?
+  contactLogs         ContactLog[]
+  contactNumber       String?
+  contactPerson       String?
+  createdAt           DateTime             @default(now())
+  email               String?
+  id                  String               @id @default(cuid())
+  leaseAgreements     LeaseAgreement[]
+  maintenanceRequests MaintenanceRequest[]
+  moveInDate          DateTime?
+  name                String?
+  payments            Payment[]
+  status              EnumTenantStatus?
+  tenantId            Int?
+  updatedAt           DateTime             @updatedAt
+}
+
+model Space {
+  amenities           String?
+  availability        EnumSpaceAvailability?
+  createdAt           DateTime               @default(now())
+  id                  String                 @id @default(cuid())
+  leaseAgreements     LeaseAgreement[]
+  location            String?
+  maintenanceRequests MaintenanceRequest[]
+  monthlyRent         Float?
+  size                Int?
+  spaceId             Int?
+  typeField           String?
+  updatedAt           DateTime               @updatedAt
+}
+
+model LeaseAgreement {
+  createdAt         DateTime  @default(now())
+  id                String    @id @default(cuid())
+  leaseEndDate      DateTime?
+  leaseId           Int?
+  leaseStartDate    DateTime?
+  leaseTerms        String?
+  monthlyRent       Float?
+  renewalOptions    String?
+  securityDeposit   Float?
+  space             Space?    @relation(fields: [spaceId], references: [id])
+  spaceId           String?
+  tenant            Tenant?   @relation(fields: [tenantId], references: [id])
+  tenantId          String?
+  terminationClause String?
+  updatedAt         DateTime  @updatedAt
+}
+
+model Mall {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  amount        Float?
+  createdAt     DateTime                  @default(now())
+  id            String                    @id @default(cuid())
+  lease         String?
+  paymentDate   DateTime?
+  paymentId     Int?
+  paymentMethod String?
+  paymentStatus EnumPaymentPaymentStatus?
+  tenant        Tenant?                   @relation(fields: [tenantId], references: [id])
+  tenantId      String?
+  updatedAt     DateTime                  @updatedAt
+}
+
+model MaintenanceRequest {
+  createdAt        DateTime                      @default(now())
+  id               String                        @id @default(cuid())
+  issueDescription String?
+  requestDate      DateTime?
+  requestId        Int?
+  resolutionDate   DateTime?
+  space            Space?                        @relation(fields: [spaceId], references: [id])
+  spaceId          String?
+  status           EnumMaintenanceRequestStatus?
+  tenant           Tenant?                       @relation(fields: [tenantId], references: [id])
+  tenantId         String?
+  updatedAt        DateTime                      @updatedAt
+}
+
+model ContactLog {
+  contactDate   DateTime?
+  contactMethod String?
+  contactReason String?
+  createdAt     DateTime  @default(now())
+  id            String    @id @default(cuid())
+  logId         Int?
+  notes         String?
+  tenant        Tenant?   @relation(fields: [tenantId], references: [id])
+  tenantId      String?
+  updatedAt     DateTime  @updatedAt
+}
+
+enum EnumTenantStatus {
+  Option1
+}
+
+enum EnumSpaceAvailability {
+  Option1
+}
+
+enum EnumPaymentPaymentStatus {
+  Option1
+}
+
+enum EnumMaintenanceRequestStatus {
+  Option1
+}
